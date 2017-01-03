@@ -1,5 +1,5 @@
 package = "external-oauth"
-version = "1.0-1"
+version = "1.0-3"
 source = {
   url = "https://github.com/mogui/kong-external-oauth"
 }
