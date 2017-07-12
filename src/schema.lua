@@ -6,6 +6,8 @@ return {
     client_id = {type = "string", required = true},
     client_secret = {type = "string", required = true},
     scope = {type = "string", default = ""},
-    user_keys = {type = "array", default = {"username", "email"}}
+    user_keys = {type = "array", default = {"username", "email"}},
+    hosted_domain = {type = "string", default = ""},
+    email_key = {type = "string", default = ""}
   }
 }
