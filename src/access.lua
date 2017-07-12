@@ -33,12 +33,12 @@ function _M.run(conf)
     -- check if we're calling the callback endpoint
     if ngx.re.match(ngx.var.request_uri, string.format(OAUTH_CALLBACK, path_prefix)) then
         handle_callback(conf, callback_url)
-    else 
-        local encrypted_token = ngx.var.cookie_EOAuthToken 
+    else
+        local encrypted_token = ngx.var.cookie_EOAuthToken
         -- check if we are authenticated already
         if encrypted_token then
-            ngx.header["Set-Cookie"] = "EOAuthToken="..encrypted_token.."; path=/;Max-Age=3000;HttpOnly"
-            
+            ngx.header["Set-Cookie"] = "EOAuthToken=" .. encrypted_token .. "; path=/;Max-Age=3000;HttpOnly"
+
             local access_token = decode_token(encrypted_token, conf)
             if not access_token then
                 -- broken access token
@@ -46,14 +46,14 @@ function _M.run(conf)
             end
 
             -- Get user info
-            -- TODO: don't know if makes sense to do everytime this call to check the validity of the token 
+            -- TODO: don't know if makes sense to do everytime this call to check the validity of the token
             --  or cache the result in a Cookie that expires early
             local httpc = http:new()
             local res, err = httpc:request_uri(conf.user_url, {
                 method = "GET",
                 ssl_verify = false,
                 headers = {
-                  ["Authorization"] = "Bearer ".. access_token,
+                  ["Authorization"] = "Bearer " .. access_token,
                 }
             })
 
@@ -66,8 +66,17 @@ function _M.run(conf)
                 local json = cjson.decode(res.body)
                 ngx.log(ngx.NOTICE, res.body)
 
+                if conf.hosted_domain ~= "" then
+                  if not pl_stringx.endswith(json[conf.email_key], conf.hosted_domain) then
+                    ngx.status = 401
+                    ngx.say("Hosted domain is not matching")
+                    ngx.exit(ngx.HTTP_OK)
+                    return
+                  end
+                end
+
                 for i, key in ipairs(conf.user_keys) do
-                    ngx.header["X-Oauth-"..key] = json[key]
+                    ngx.header["X-Oauth-".. key] = json[key]
                 end
                 ngx.header["X-Oauth-Token"] = access_token
             else
@@ -78,14 +87,14 @@ function _M.run(conf)
             return redirect_to_auth( conf, callback_url )
         end
     end
-    
+
 end
 
 function redirect_to_auth( conf, callback_url )
     -- Track the endpoint they wanted access to so we can transparently redirect them back
-    ngx.header["Set-Cookie"] = "EOAuthRedirectBack="..ngx.var.request_uri.."; path=/;Max-Age=120"
+    ngx.header["Set-Cookie"] = "EOAuthRedirectBack=" .. ngx.var.request_uri .. "; path=/;Max-Age=120"
     -- Redirect to the /oauth endpoint
-    local oauth_authorize = conf.authorize_url .. "?response_type=code&client_id=" .. conf.client_id .. "&redirect_uri=" .. callback_url .. "&scope="..conf.scope
+    local oauth_authorize = conf.authorize_url .. "?response_type=code&client_id=" .. conf.client_id .. "&redirect_uri=" .. callback_url .. "&scope=" .. conf.scope
     return ngx.redirect(oauth_authorize)
 end
 
@@ -95,23 +104,23 @@ end
 
 function decode_token(token, conf)
     status, token = pcall(function () return crypto.decrypt("aes-128-cbc", ngx.decode_base64(token), crypto.digest('md5',conf.client_secret)) end)
-    if status then 
+    if status then
         return token
     else
         return nil
-    end 
+    end
 end
 
 -- Callback Handling
 function  handle_callback( conf, callback_url )
     local args = ngx.req.get_uri_args()
-    
+
     if args.code then
         local httpc = http:new()
         local res, err = httpc:request_uri(conf.token_url, {
             method = "POST",
             ssl_verify = false,
-            body = "grant_type=authorization_code&client_id="..conf.client_id.."&client_secret="..conf.client_secret.."&code="..args.code.."&redirect_uri=".. callback_url,
+            body = "grant_type=authorization_code&client_id=" .. conf.client_id .. "&client_secret=" .. conf.client_secret .. "&code=" .. args.code .. "&redirect_uri=" .. callback_url,
             headers = {
               ["Content-Type"] = "application/x-www-form-urlencoded",
             }
@@ -131,8 +140,8 @@ function  handle_callback( conf, callback_url )
             ngx.exit(ngx.HTTP_OK)
         end
 
-        
-        ngx.header["Set-Cookie"] = "EOAuthToken="..encode_token( access_token, conf ).."; path=/;Max-Age=3000;HttpOnly"
+
+        ngx.header["Set-Cookie"] = "EOAuthToken="..encode_token( access_token, conf ) .. "; path=/;Max-Age=3000;HttpOnly"
         -- Support redirection back to your request if necessary
         local redirect_back = ngx.var.cookie_EOAuthRedirectBack
         if redirect_back then
@@ -140,7 +149,7 @@ function  handle_callback( conf, callback_url )
         else
             return ngx.redirect(ngx.ctx.api.request_path)
         end
-    else 
+    else
         ngx.status = ngx.HTTP_BAD_REQUEST
         ngx.say("Nope")
         ngx.exit(ngx.HTTP_OK)
