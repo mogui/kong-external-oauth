@@ -4,23 +4,27 @@ A Kong plugin, that let you use an external Oauth 2.0 provider to protect your A
 
 ## Description
 
-KONG has bundled a plugin to implement a full OAUTH 2.0 provider. This plugin instead let you use a third party OAUTH 2.0 provider to protect your API/site implementing the full flow, it will automatically expose a callback uri, and request an access token.
+KONG has bundled a plugin to implement a full OAUTH 2.0 provider. This plugin instead let you use a
+third party OAUTH 2.0 provider to protect your API/site implementing the full flow, it will automatically
+expose a callback uri, and request an access token.
 
-It will then request user info (specified in the configuration) and add some header to let be used by your `upstream` service.
+It will then request user info (specified in the configuration) and add some header to let be used
+by your `upstream` service.
 
-If configured, it can also check the provided email address and make sure it belongs to a particular domain, so you can
-use the plugin also for thirty party services.
+If configured, it can also check the provided email address and make sure it belongs to a particular
+domain, so you can use the plugin also for thirty party services.
 
 ## Installation
 
     $ luarocks install external-oauth
 
-To make Kong aware that it has to look for the new plugin, you'll have to add it to the custom_plugins property in your configuration file.
+To make Kong aware that it has to look for the new plugin, you'll have to add it to the custom_plugins
+property in your configuration file.
 
-<pre>
+```yaml
 custom_plugins:
     - external-oauth
-</pre>
+```
 
 Remember to restart Kong.
 
