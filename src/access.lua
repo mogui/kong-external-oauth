@@ -76,7 +76,6 @@ function _M.run(conf)
                 end
 
                 local json = cjson.decode(res.body)
-                ngx.log(ngx.NOTICE, res.body)
 
                 if conf.hosted_domain ~= "" and conf.email_key ~= "" then
                   if not pl_stringx.endswith(json[conf.email_key], conf.hosted_domain) then
