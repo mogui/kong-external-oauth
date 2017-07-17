@@ -23,10 +23,22 @@ local OAUTH_CALLBACK = "^%s/oauth2/callback(/?(\\?[^\\s]*)*)$"
 
 function _M.run(conf)
      -- Check if the API has a request_path and if it's being invoked with the path resolver
-    local path_prefix = (ngx.ctx.api.request_path and pl_stringx.startswith(ngx.var.request_uri, ngx.ctx.api.request_path)) and ngx.ctx.api.request_path or ""
-    if pl_stringx.endswith(path_prefix, "/") then
-        path_prefix = path_prefix:sub(1, path_prefix:len() - 1)
+    local path_prefix = ""
+
+    if ngx.ctx.api.uris ~= nil then
+      for index, value in ipairs(ngx.ctx.api.uris) do
+        if pl_stringx.startswith(ngx.var.request_uri, value) then
+          path_prefix = value
+          break
+        end
+      end
+
+      if pl_stringx.endswith(path_prefix, "/") then
+          path_prefix = path_prefix:sub(1, path_prefix:len() - 1)
+      end
+
     end
+
 
     local callback_url = ngx.var.scheme .. "://" .. ngx.var.host .. path_prefix .. "/oauth2/callback"
 
