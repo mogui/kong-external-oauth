@@ -26,16 +26,16 @@ function _M.run(conf)
     local path_prefix = ""
 
     if ngx.ctx.api.uris ~= nil then
-      for index, value in ipairs(ngx.ctx.api.uris) do
-        if pl_stringx.startswith(ngx.var.request_uri, value) then
-          path_prefix = value
-          break
+        for index, value in ipairs(ngx.ctx.api.uris) do
+            if pl_stringx.startswith(ngx.var.request_uri, value) then
+                path_prefix = value
+                break
+            end
         end
-      end
 
-      if pl_stringx.endswith(path_prefix, "/") then
-          path_prefix = path_prefix:sub(1, path_prefix:len() - 1)
-      end
+        if pl_stringx.endswith(path_prefix, "/") then
+            path_prefix = path_prefix:sub(1, path_prefix:len() - 1)
+        end
 
     end
 
@@ -78,12 +78,12 @@ function _M.run(conf)
                 local json = cjson.decode(res.body)
 
                 if conf.hosted_domain ~= "" and conf.email_key ~= "" then
-                  if not pl_stringx.endswith(json[conf.email_key], conf.hosted_domain) then
-                    ngx.status = 401
-                    ngx.say("Hosted domain is not matching")
-                    ngx.exit(ngx.HTTP_OK)
-                    return
-                  end
+                    if not pl_stringx.endswith(json[conf.email_key], conf.hosted_domain) then
+                        ngx.status = 401
+                        ngx.say("Hosted domain is not matching")
+                        ngx.exit(ngx.HTTP_OK)
+                        return
+                    end
                 end
 
                 for i, key in ipairs(conf.user_keys) do
@@ -91,7 +91,10 @@ function _M.run(conf)
                 end
                 ngx.header["X-Oauth-Token"] = access_token
             else
-                return redirect_to_auth( conf, callback_url )
+                ngx.status = 500
+                ngx.say(err)
+                ngx.exit(ngx.HTTP_OK)
+                return
             end
 
         else
