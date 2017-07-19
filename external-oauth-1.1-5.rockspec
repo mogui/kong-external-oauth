@@ -1,14 +1,14 @@
 package = "external-oauth"
-version = "1.0-2"
+version = "1.1-5"
 source = {
-  url = "https://github.com/mogui/kong-external-oauth"
+  url = "git://github.com/mogui/kong-external-oauth"
 }
 description = {
   summary = "A Kong plugin, that let you use an external Oauth 2.0 provider to protect your API",
   license = "Apache 2.0"
 }
 dependencies = {
-  "lua ~> 5.1"
+  "lua >= 5.1"
   -- If you depend on other rocks, add them here
 }
 build = {
