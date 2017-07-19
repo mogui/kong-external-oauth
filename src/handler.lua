@@ -24,7 +24,7 @@ end
 
 function ExtOauthPlugin:access(conf)
 	ExtOauthPlugin.super.access(self)
-	access.run(conf)	
+	access.run(conf)
 end
 
 return ExtOauthPlugin

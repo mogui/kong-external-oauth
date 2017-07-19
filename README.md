@@ -4,19 +4,27 @@ A Kong plugin, that let you use an external Oauth 2.0 provider to protect your A
 
 ## Description
 
-KONG has bundled a plugin to implement a full OAUTH 2.0 provider. This plugin instead let you use a third party OAUTH 2.0 provider to protect your API/site implementing the full flow, it will automatically expose a callback uri, and request an access token.   
-It will then request user info (specified in the configuration) and add some header to let be used by your `upstream` service.
+KONG has bundled a plugin to implement a full OAUTH 2.0 provider. This plugin instead let you use a
+third party OAUTH 2.0 provider to protect your API/site implementing the full flow, it will automatically
+expose a callback uri, and request an access token.
+
+It will then request user info (specified in the configuration) and add some header to let be used
+by your `upstream` service.
+
+If configured, it can also check the provided email address and make sure it belongs to a particular
+domain, so you can use the plugin also for thirty party services.
 
 ## Installation
 
     $ luarocks install external-oauth
 
-To make Kong aware that it has to look for the new plugin, you'll have to add it to the custom_plugins property in your configuration file.
+To make Kong aware that it has to look for the new plugin, you'll have to add it to the custom_plugins
+property in your configuration file.
 
-<pre>
+```yaml
 custom_plugins:
     - external-oauth
-</pre>
+```
 
 Remember to restart Kong.
 
@@ -26,7 +34,7 @@ Remember to restart Kong.
 
 You can add the plugin with the following request:
 
-<pre>
+```bash
 $ curl -X POST http://kong:8001/apis/{api}/plugins \
     --data "name=external-oauth" \
     --data "config.authorize_url=https://oauth.something.net/openid-connect/authorize" \
@@ -35,8 +43,10 @@ $ curl -X POST http://kong:8001/apis/{api}/plugins \
     --data "config.client_id=SOME_CLEINT_ID" \
     --data "config.client_secret=SOME_SECRET_KEY" \
     --data "config.user_url=https://oauth.something.net/openid-connect/userinfo" \
-    --data "config.user_keys=email,name,sub" 
-</pre>
+    --data "config.user_keys=email,name,sub"
+    --data "config.hosted_domain=mycompany.com"
+    --data "config.email_key=email"
+```
 
 | Form Parameter | default | description |
 | --- 						| --- | --- |
@@ -48,6 +58,8 @@ $ curl -X POST http://kong:8001/apis/{api}/plugins \
 | `config.client_secret` 	| | OAUTH Client Secret |
 | `config.user_url` 		  | | url of the oauth provider used to retrieve user information and also check the validity of the access token |
 | `config.user_keys` <br /> <small>Optional</small>		| `username,email` | keys to extract from the `user_url` endpoint returned json, they will also be added to the headers of the upstream server as `X-OAUTH-XXX` |
+| `config.hosted_domain`  | | domain whose users must belong to in order to get logged in. Ignored if empty |
+| `config.email_key` 		  | | key to be checked for hosted domain, taken from userinfo endpoint |
 
 In addition to the `user_keys` will be added a `X-OAUTH-TOKEN` header with the access token of the provider.
 
