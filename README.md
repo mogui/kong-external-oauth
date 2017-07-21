@@ -11,6 +11,9 @@ expose a callback uri, and request an access token.
 It will then request user info (specified in the configuration) and add some header to let be used
 by your `upstream` service.
 
+The plugin will periodically check for token validity. You can configure the time period through
+a configuration parameter, in seconds.
+
 If configured, it can also check the provided email address and make sure it belongs to a particular
 domain, so you can use the plugin also for thirty party services.
 
@@ -60,6 +63,7 @@ $ curl -X POST http://kong:8001/apis/{api}/plugins \
 | `config.user_keys` <br /> <small>Optional</small>		| `username,email` | keys to extract from the `user_url` endpoint returned json, they will also be added to the headers of the upstream server as `X-OAUTH-XXX` |
 | `config.hosted_domain`  | | domain whose users must belong to in order to get logged in. Ignored if empty |
 | `config.email_key` 		  | | key to be checked for hosted domain, taken from userinfo endpoint |
+| `config.user_info_periodic_check` 		  | 60 | time in seconds between token checks |
 
 In addition to the `user_keys` will be added a `X-OAUTH-TOKEN` header with the access token of the provider.
 
