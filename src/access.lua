@@ -173,7 +173,7 @@ function  handle_callback( conf, callback_url )
         end
     else
         ngx.status = ngx.HTTP_BAD_REQUEST
-        ngx.say("Nope")
+        ngx.say("User has denied access to the resources.")
         ngx.exit(ngx.HTTP_OK)
     end
 end
