@@ -39,8 +39,7 @@ function _M.run(conf)
 
     end
 
-
-    local callback_url = ngx.var.scheme .. "://" .. ngx.var.host .. path_prefix .. "/oauth2/callback"
+    local callback_url = ngx.var.scheme .. "://" .. ngx.var.host ..  ":" .. ngx.var.server_port .. path_prefix .. "/oauth2/callback"
 
     -- check if we're calling the callback endpoint
     if ngx.re.match(ngx.var.request_uri, string.format(OAUTH_CALLBACK, path_prefix)) then
