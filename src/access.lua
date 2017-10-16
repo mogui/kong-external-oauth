@@ -78,9 +78,8 @@ function _M.run(conf)
 
                     if conf.hosted_domain ~= "" and conf.email_key ~= "" then
                         if not pl_stringx.endswith(json[conf.email_key], conf.hosted_domain) then
-                            ngx.status = 401
                             ngx.say("Hosted domain is not matching")
-                            ngx.exit(ngx.HTTP_OK)
+                            ngx.exit(ngx.HTTP_UNAUTHORIZED)
                             return
                         end
                     end
@@ -97,9 +96,8 @@ function _M.run(conf)
                     end
 
                 else
-                    ngx.status = 500
                     ngx.say(err)
-                    ngx.exit(ngx.HTTP_OK)
+                    ngx.exit(ngx.HTTP_INTERNAL_SERVER_ERROR)
                     return
                 end
             end
@@ -149,17 +147,15 @@ function  handle_callback( conf, callback_url )
         })
 
         if not res then
-            ngx.status = res.status
             ngx.say("failed to request: ", err)
-            ngx.exit(ngx.HTTP_OK)
+            ngx.exit(ngx.HTTP_INTERNAL_SERVER_ERROR)
         end
 
         local json = cjson.decode(res.body)
         local access_token = json.access_token
         if not access_token then
-            ngx.status = 500
             ngx.say(json.error_description)
-            ngx.exit(ngx.HTTP_OK)
+            ngx.exit(ngx.HTTP_BAD_REQUEST)
         end
 
 
@@ -172,9 +168,8 @@ function  handle_callback( conf, callback_url )
             return ngx.redirect(ngx.ctx.api.request_path)
         end
     else
-        ngx.status = ngx.HTTP_BAD_REQUEST
         ngx.say("User has denied access to the resources.")
-        ngx.exit(ngx.HTTP_OK)
+        ngx.exit(ngx.HTTP_UNAUTHORIZED)
     end
 end
 
