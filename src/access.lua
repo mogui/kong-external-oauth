@@ -63,6 +63,7 @@ function _M.run(conf)
                     method = "GET",
                     ssl_verify = false,
                     headers = {
+                      ['Accept'] = 'application/json; charset=utf-8',
                       ["Authorization"] = "Bearer " .. access_token,
                     }
                 })
@@ -142,6 +143,7 @@ function  handle_callback( conf, callback_url )
             ssl_verify = false,
             body = "grant_type=authorization_code&client_id=" .. conf.client_id .. "&client_secret=" .. conf.client_secret .. "&code=" .. args.code .. "&redirect_uri=" .. callback_url,
             headers = {
+              ['Accept'] = 'application/json; charset=utf-8',
               ["Content-Type"] = "application/x-www-form-urlencoded",
             }
         })
