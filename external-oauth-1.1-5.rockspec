@@ -1,7 +1,7 @@
-package = "external-oauth"
+package = "external-oauth2"
 version = "1.1-5"
 source = {
-  url = "git://github.com/mogui/kong-external-oauth"
+  url = "git://github.com/jackong/kong-external-oauth"
 }
 description = {
   summary = "A Kong plugin, that let you use an external Oauth 2.0 provider to protect your API",
