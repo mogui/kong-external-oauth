@@ -14,8 +14,8 @@ dependencies = {
 build = {
   type = "builtin",
   modules = {
-    ["kong.plugins.external-oauth.access"] = "src/access.lua",
-    ["kong.plugins.external-oauth.handler"] = "src/handler.lua",
-    ["kong.plugins.external-oauth.schema"] = "src/schema.lua"
+    ["kong.plugins.external-oauth2.access"] = "src/access.lua",
+    ["kong.plugins.external-oauth2.handler"] = "src/handler.lua",
+    ["kong.plugins.external-oauth2.schema"] = "src/schema.lua"
   }
 }
