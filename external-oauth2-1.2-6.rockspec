@@ -1,7 +1,7 @@
 package = "external-oauth2"
 version = "1.2-6"
 source = {
-  url = "git://github.com/jackong/kong-external-oauth"
+  url = "https://github.com/jackong/kong-external-oauth.git"
 }
 description = {
   summary = "A Kong plugin, that let you use an external Oauth 2.0 provider to protect your API",
