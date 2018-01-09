@@ -13,6 +13,7 @@ local function validate_url(value)
 end
 
 return {
+  no_consumer = true,
   fields = {
     authorize_url = {type = "url", required = true, func = validate_url},
     token_url = {type = "url", required = true, func = validate_url},
